@@ -75,7 +75,7 @@ function uploadFile(file, signedRequest, url) {
 
                 $('#upload-button').prop('disabled',true);
                 $('#upload-button').attr('value','Submitted');
-                location.replace('../submitted')
+                location.replace('../photomania-submitted')
             } else {
                 alert("Could not upload file");
             }
