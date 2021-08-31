@@ -268,7 +268,6 @@ express()
         res.send(winner);
     })
     .get('/display-results' + process.env.ADMIN_KEY, function(req,res) {
-        var curr_average_ratings = [];
 
         const s3 = new aws.S3();
         s3.getObject({
