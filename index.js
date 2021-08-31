@@ -2,13 +2,13 @@ console.log("Running");
 
 var express = require("express");
 var cors = require("cors");
+const fs = require("fs");
 const aws = require("aws-sdk");
 
 const S3_BUCKET = process.env.S3_BUCKET;
 aws.config.region = 'us-west-2';
 
 var counter = 0;
-var total_votes = 0;
 var hits = 0;
 
 //Same order
@@ -16,7 +16,6 @@ var username_list = [];
 var imgURL_list = [];
 
 //Same order
-var rated_images = [];
 var ratings = [[]];
 
 var average_ratings = [];
@@ -45,11 +44,13 @@ express()
 
         //Get amount of items in bucket with AWS S3 API
         s3.listObjects(listParams, function(err,data) {
+            
             if(err) {
                 console.log('List error: ' + err);
                 fileName = 'err';
             } else {
-                console.log(data.Contents.length);
+
+                //Set uploading params
                 count = parseInt(data.Contents.length);
                 fileName = `image${count}`
                 counter = count;
@@ -58,28 +59,99 @@ express()
                 const username = req.query['username'];
 
                 const s3Params = {
-                Bucket: S3_BUCKET,
-                Key: fileName,
-                Expires: 60,
-                ContentType: fileType,
-                ACL: 'public-read'
+                    Bucket: S3_BUCKET,
+                    Key: fileName,
+                    Expires: 60,
+                    ContentType: fileType,
+                    ACL: 'public-read',
+                    Metadata: {
+                        user:username
+                    }
                 }
             
+                //Get signed URL to send to client to upload
                 s3.getSignedUrl('putObject', s3Params, (err, data) => {
                     if(err){
                         console.log('Signed error: ' + err);
                         return res.end();
                     }
+
                     const returnData = {
                         signedRequest: data,
                         url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`
                     };
-                    imgURL_list.push(`https://reddit-photo-contest.s3.us-west-2.amazonaws.com/${fileName}`);
-                    if(username) {
-                        username_list.push(username);
-                    } else {
-                        username_list.push('Anonymous');
-                    }
+
+                    //Get username list from username list stored in S3
+                    s3.getObject({Bucket:S3_BUCKET, Key:'usernames'}, function(err,data) {
+
+                        if(err) {
+                            console.log("Get error: " + err);
+                            username_list = [];
+
+                            //Update username_list
+                            if(username) {
+                                username_list.push(username);
+                            } else {
+                                username_list.push('Anonymous');
+                            }
+
+                            //Write local version
+                            fs.writeFileSync("usernames.txt", JSON.stringify(username_list));
+
+                            //Upload to S3
+                            uploadToS3('usernames.txt', s3, 'usernames');
+
+                        } else {
+                            username_list = JSON.parse(String.fromCharCode.apply(null,data.Body));
+                            console.log("username_list updated from s3");
+
+                            //Update username_list
+                            if(username) {
+                                username_list.push(username);
+                            } else {
+                                username_list.push('Anonymous');
+                            }
+
+                            //Write local version
+                            fs.writeFileSync("usernames.txt", JSON.stringify(username_list));
+
+                            uploadToS3('usernames.txt', s3, 'usernames');
+
+                        }
+
+                    });
+
+                    //Get img URL list from img URL list stored in S3
+                    s3.getObject({Bucket:S3_BUCKET, Key:'imgURLs'}, function(err,data) {
+
+                        if(err) {
+                            console.log("Get error: " + err);
+                            imgURL_list = [];
+
+                            //Update imgURL_list
+                            imgURL_list.push(`https://reddit-photo-contest.s3.us-west-2.amazonaws.com/${fileName}`);
+                            
+                            //Rewrite local file
+                            fs.writeFileSync("imgURLs.txt", JSON.stringify(imgURL_list));
+
+                            uploadToS3('imgURLs.txt', s3, 'imgURLs');
+
+                        } else {
+                            imgURL_list = JSON.parse(String.fromCharCode.apply(null,data.Body));
+                            console.log("imgURL updated from s3");
+                            
+                            //Update imgURL_list
+                            imgURL_list.push(`https://reddit-photo-contest.s3.us-west-2.amazonaws.com/${fileName}`);
+                            
+                            //Rewrite local file
+                            fs.writeFileSync("imgURLs.txt", JSON.stringify(imgURL_list));
+
+                            uploadToS3('imgURLs.txt', s3, 'imgURLs');
+
+                        }
+
+                    });
+
                     res.write(JSON.stringify(returnData));
                     res.end();
                 });
@@ -92,9 +164,9 @@ express()
     })
     .get("/get-photo-url", function(req,res) {
 
-        var randInt = Math.floor(Math.random() * (counter));
-        var photoURL = "https://reddit-photo-contest.s3.us-west-2.amazonaws.com/image" + randInt;
-        
+        var randInt = Math.floor(Math.random() * (imgURL_list.length));
+        photoURL = imgURL_list[randInt];
+
         var params = {
             'photoURL':photoURL,
             'username':username_list[randInt]
@@ -105,36 +177,82 @@ express()
 
     })
     .post("/submit-rating", function(req,res) {
-        total_votes++;
-        console.log(`Vote count: ${total_votes}`)
 
-        //If image has no ratings yet, add to list of rated images
-        if(rated_images.indexOf(req.body.photoURL) === -1) {
-            rated_images.push(req.body.photoURL);
-        }
+        //TODO add ratings to temp object, then upload at interval
 
-        //If image has no ratings, initialize the rating array
-        if(!ratings[rated_images.indexOf(req.body.photoURL)]) {
-            ratings[rated_images.indexOf(req.body.photoURL)] = [];
-        }
+        //PULL RATING LIST FROM S3 AND CONVERT TO JSON
+        const s3 = new aws.S3();
+        s3.getObject({Bucket:S3_BUCKET, Key:'ratings'}, function(err,data) {
+            if(err) {
+                console.log("Ratings err" + err);
+                ratings = [[]];
 
-        //Push rating to ratings array at corresponding index of the rated image rated_images
-        ratings[rated_images.indexOf(req.body.photoURL)].push(req.body.rating);
+                if(!ratings[imgURL_list.indexOf(req.body.photoURL)]) {
+                    console.log("Creating new rating entry at " + imgURL_list.indexOf(req.body.photoURL));
+                    ratings[imgURL_list.indexOf(req.body.photoURL)] = [];
+                }
+                ratings[imgURL_list.indexOf(req.body.photoURL)].push(req.body.rating);
+                console.log("Ratings: ");
+                console.log(ratings);
+
+                //REWRITE FILE
+                fs.writeFileSync("ratings.txt", JSON.stringify(ratings));
+
+                uploadToS3('ratings.txt', s3, 'ratings');
+
+            } else {
+                ratings = JSON.parse(String.fromCharCode.apply(null,data.Body));
+                console.log("Fetched ratings");
+
+                //GET LOCATION OF IMGURL IN imgURLs_list (local version of s3)
+                //PUT RATING IN SAME LOCATION IN THE RATING LIST
+                if(!ratings[imgURL_list.indexOf(req.body.photoURL)]) {
+                    console.log("Creating new rating entry at " + imgURL_list.indexOf(req.body.photoURL));
+                    ratings[imgURL_list.indexOf(req.body.photoURL)] = [];
+                }
+                ratings[imgURL_list.indexOf(req.body.photoURL)].push(req.body.rating);
+                console.log("Ratings: ");
+                console.log(ratings);
+
+                //REWRITE FILE
+                fs.writeFileSync("ratings.txt", JSON.stringify(ratings));
+
+                uploadToS3('ratings.txt', s3, 'ratings');
+
+            }
+        });
+
+        
 
         res.sendStatus(200);
         res.end();
     })
     .get("/end-contest" + process.env.ADMIN_KEY, function(req,res) {
         average_ratings = [];
-        var average = 0;
-        for(var i = 0; i < rated_images.length; i++) {
-            for(var j = 0; j < ratings[i].length; j++) {
-                average += parseInt(ratings[i][j]);
+
+        const s3 = new aws.S3();
+        s3.getObject({
+            Bucket:S3_BUCKET,
+            Key:'ratings'
+        }, function(err,data) {
+
+            var ave = 0;
+            var fetched_ratings = JSON.parse(String.fromCharCode.apply(null,data.Body));
+            console.log(JSON.parse(String.fromCharCode.apply(null,data.Body)));
+            for(var i = 0; i < fetched_ratings.length; i++) {
+                if(fetched_ratings[i]) {
+                    for(var j = 0; j < fetched_ratings[i].length; j++) {
+                        ave += parseInt(fetched_ratings[i][j]);
+                    }
+                    ave = (ave / fetched_ratings[i].length);
+                    average_ratings.push(ave);
+                    ave = 0;
+                } else {
+                    average_ratings.push(NaN);
+                }
             }
-            average_ratings.push(average/ratings[i].length);
-            average = 0;
-        }
-        console.log(average_ratings);
+
+        });
 
         var highest = 0;
         var highestLocale = 0;
@@ -144,7 +262,7 @@ express()
                 highestLocale = i;
             }
         }
-        var winner = username_list[imgURL_list.indexOf(rated_images[highestLocale])];
+        var winner = username_list[highestLocale];
 
         console.log(`Winner: ${winner}`);
         res.send(winner);
@@ -152,25 +270,27 @@ express()
     .get('/display-results' + process.env.ADMIN_KEY, function(req,res) {
         var curr_average_ratings = [];
 
-        var average = 0;
-        for(var i = 0; i < rated_images.length; i++) {
-            for(var j = 0; j < ratings[i].length; j++) {
-                average += parseInt(ratings[i][j]);
-            }
-            curr_average_ratings.push(average/ratings[i].length);
-            average = 0;
-        }
+        const s3 = new aws.S3();
+        s3.getObject({
+            Bucket:S3_BUCKET,
+            Key:'ratings'
+        }, function(err,data) {
 
-        for(var i = 0; i < username_list.length; i++) {
-            var tUsername = username_list[i];
-            var img = imgURL_list[i];
-            var ave = curr_average_ratings[rated_images.indexOf(img)];
-
-            if(!ave) {
-                ave = "No votes yet";
+            var ave = 0;
+            var fetched_ratings = JSON.parse(String.fromCharCode.apply(null,data.Body));
+            console.log(JSON.parse(String.fromCharCode.apply(null,data.Body)));
+            for(var i = 0; i < fetched_ratings.length; i++) {
+                if(fetched_ratings[i]) {
+                    for(var j = 0; j < fetched_ratings[i].length; j++) {
+                        ave += parseInt(fetched_ratings[i][j]);
+                    }
+                    ave = (ave / fetched_ratings[i].length);
+                    console.log(`${username_list[i]}: ${ave}`);
+                    ave = 0;
+                }
             }
-            console.log(`${tUsername}: ${ave}. Img: ${img}`);
-        }
+
+        });
 
         res.write("Please check console");
         res.end();
@@ -179,3 +299,20 @@ express()
         res.render('public/views/cookies.ejs');
     })
     .listen(process.env.PORT || 80, () => console.log('Listening'));
+
+function uploadToS3(file, s3, key) {
+
+    var fileStream = fs.createReadStream(file);
+
+    s3.upload({
+        Bucket:S3_BUCKET,
+        Key:key,
+        Body:fileStream,
+        ACL:'public-read'
+    }, function(err,data) {
+        if(err) {
+            console.log("Upload error: " + err);
+        }
+    });
+
+}
