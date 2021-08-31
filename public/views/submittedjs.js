@@ -45,7 +45,6 @@ function fetchPhoto() {
     const xhr3 = new XMLHttpRequest();
     xhr3.onreadystatechange = () => {
         if(xhr3.readyState === 4 && xhr3.status === 200) {
-
             
             var seenFromCookie = JSON.parse(Cookies.get('seenString'));
             var responseParams = JSON.parse(xhr3.responseText);

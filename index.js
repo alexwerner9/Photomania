@@ -34,58 +34,74 @@ express()
         console.log(`Hits: ${hits}`);
     })
     .get('/sign-s3', (req, res) => {
-        const s3 = new aws.S3();
-        const fileName = `image${counter++}`;
-        const fileType = req.query['file-type'];
-        const username = req.query['username'];
-        const s3Params = {
-          Bucket: S3_BUCKET,
-          Key: fileName,
-          Expires: 60,
-          ContentType: fileType,
-          ACL: 'public-read'
+
+        const listParams = {
+            Bucket: S3_BUCKET
         }
-      
-        s3.getSignedUrl('putObject', s3Params, (err, data) => {
-          if(err){
-            console.log(err);
-            return res.end();
-          }
-          const returnData = {
-            signedRequest: data,
-            url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`
-          };
-          imgURL_list.push(`https://reddit-photo-contest.s3.us-west-2.amazonaws.com/${fileName}`);
-          if(username) {
-            username_list.push(username);
-          } else {
-            username_list.push('Anonymous');
-          }
-          res.write(JSON.stringify(returnData));
-          res.end();
-        });
-      })
+
+        const s3 = new aws.S3();
+        var fileName = "default_name";
+        var count = 0;
+
+        //Get amount of items in bucket with AWS S3 API
+        s3.listObjects(listParams, function(err,data) {
+            if(err) {
+                console.log('List error: ' + err);
+                fileName = 'err';
+            } else {
+                console.log(data.Contents.length);
+                count = parseInt(data.Contents.length);
+                fileName = `image${count}`
+                counter = count;
+                
+                const fileType = req.query['file-type'];
+                const username = req.query['username'];
+
+                const s3Params = {
+                Bucket: S3_BUCKET,
+                Key: fileName,
+                Expires: 60,
+                ContentType: fileType,
+                ACL: 'public-read'
+                }
+            
+                s3.getSignedUrl('putObject', s3Params, (err, data) => {
+                    if(err){
+                        console.log('Signed error: ' + err);
+                        return res.end();
+                    }
+                    const returnData = {
+                        signedRequest: data,
+                        url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`
+                    };
+                    imgURL_list.push(`https://reddit-photo-contest.s3.us-west-2.amazonaws.com/${fileName}`);
+                    if(username) {
+                        username_list.push(username);
+                    } else {
+                        username_list.push('Anonymous');
+                    }
+                    res.write(JSON.stringify(returnData));
+                    res.end();
+                });
+
+            }
+      });
+    })
     .get("/photomania-submitted", function(req,res) {
         res.render('public/views/submitted.ejs');
     })
     .get("/get-photo-url", function(req,res) {
 
-        if(counter > 0) {
-
-            var randInt = Math.floor(Math.random() * (counter - 1));
-            var photoURL = "https://reddit-photo-contest.s3.us-west-2.amazonaws.com/image" + randInt;
-            
-            var params = {
-                'photoURL':photoURL,
-                'username':username_list[randInt]
-            }
-            
-            res.write(JSON.stringify(params));
-            res.end();
-
-        } else {
-            res.end();
+        var randInt = Math.floor(Math.random() * (counter));
+        var photoURL = "https://reddit-photo-contest.s3.us-west-2.amazonaws.com/image" + randInt;
+        
+        var params = {
+            'photoURL':photoURL,
+            'username':username_list[randInt]
         }
+        
+        res.write(JSON.stringify(params));
+        res.end();
 
     })
     .post("/submit-rating", function(req,res) {
