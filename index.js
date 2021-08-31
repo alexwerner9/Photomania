@@ -29,8 +29,6 @@ express()
     .set('view engine', 'ejs')
     .get('/photomania', function(req, res) {
         res.render('public/views/account.ejs');
-        hits++;
-        console.log(`Hits: ${hits}`);
     })
     .get('/sign-s3', (req, res) => {
 
@@ -103,7 +101,6 @@ express()
 
                         } else {
                             username_list = JSON.parse(String.fromCharCode.apply(null,data.Body));
-                            console.log("username_list updated from s3");
 
                             //Update username_list
                             if(username) {
@@ -138,7 +135,6 @@ express()
 
                         } else {
                             imgURL_list = JSON.parse(String.fromCharCode.apply(null,data.Body));
-                            console.log("imgURL updated from s3");
                             
                             //Update imgURL_list
                             imgURL_list.push(`https://reddit-photo-contest.s3.us-west-2.amazonaws.com/${fileName}`);
@@ -192,8 +188,6 @@ express()
                     ratings[imgURL_list.indexOf(req.body.photoURL)] = [];
                 }
                 ratings[imgURL_list.indexOf(req.body.photoURL)].push(req.body.rating);
-                console.log("Ratings: ");
-                console.log(ratings);
 
                 //REWRITE FILE
                 fs.writeFileSync("ratings.txt", JSON.stringify(ratings));
@@ -202,7 +196,6 @@ express()
 
             } else {
                 ratings = JSON.parse(String.fromCharCode.apply(null,data.Body));
-                console.log("Fetched ratings");
 
                 //GET LOCATION OF IMGURL IN imgURLs_list (local version of s3)
                 //PUT RATING IN SAME LOCATION IN THE RATING LIST
@@ -211,8 +204,6 @@ express()
                     ratings[imgURL_list.indexOf(req.body.photoURL)] = [];
                 }
                 ratings[imgURL_list.indexOf(req.body.photoURL)].push(req.body.rating);
-                console.log("Ratings: ");
-                console.log(ratings);
 
                 //REWRITE FILE
                 fs.writeFileSync("ratings.txt", JSON.stringify(ratings));
@@ -238,7 +229,6 @@ express()
 
             var ave = 0;
             var fetched_ratings = JSON.parse(String.fromCharCode.apply(null,data.Body));
-            console.log(JSON.parse(String.fromCharCode.apply(null,data.Body)));
             for(var i = 0; i < fetched_ratings.length; i++) {
                 if(fetched_ratings[i]) {
                     for(var j = 0; j < fetched_ratings[i].length; j++) {
@@ -277,7 +267,6 @@ express()
 
             var ave = 0;
             var fetched_ratings = JSON.parse(String.fromCharCode.apply(null,data.Body));
-            console.log(JSON.parse(String.fromCharCode.apply(null,data.Body)));
             for(var i = 0; i < fetched_ratings.length; i++) {
                 if(fetched_ratings[i]) {
                     for(var j = 0; j < fetched_ratings[i].length; j++) {
