@@ -1,0 +1,16 @@
+{
+    "name": "reddit-photo-contest",
+    "verson": "1.0.0",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "dependencies": {
+        "ajax": "0.0.4",
+        "aws-sdk": "^2.977.0",
+        "cors": "^2.8.5",
+        "ejs": "^3.1.6",
+        "express": "^4.17.1",
+        "jquery": "^3.6.0",
+        "js-cookie": "^3.0.0"
+    }
+}

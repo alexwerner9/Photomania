@@ -1,0 +1,10 @@
+"filename", "language", "JavaScript", "CSS", "HTML", "JSON", "comment", "blank", "total"
+"c:\Users\Alex\Desktop\Github\Photo Contest\index.js", "JavaScript", 116, 0, 0, 0, 2, 22, 140
+"c:\Users\Alex\Desktop\Github\Photo Contest\package-lock.json", "JSON", 0, 0, 0, 612, 0, 1, 613
+"c:\Users\Alex\Desktop\Github\Photo Contest\package.json", "JSON", 0, 0, 0, 16, 0, 1, 17
+"c:\Users\Alex\Desktop\Github\Photo Contest\public\views\account.ejs", "HTML", 0, 0, 25, 0, 0, 4, 29
+"c:\Users\Alex\Desktop\Github\Photo Contest\public\views\client.js", "JavaScript", 75, 0, 0, 0, 0, 13, 88
+"c:\Users\Alex\Desktop\Github\Photo Contest\public\views\style.css", "CSS", 0, 128, 0, 0, 0, 7, 135
+"c:\Users\Alex\Desktop\Github\Photo Contest\public\views\submitted.ejs", "HTML", 0, 0, 33, 0, 0, 3, 36
+"c:\Users\Alex\Desktop\Github\Photo Contest\public\views\submittedjs.js", "JavaScript", 67, 0, 0, 0, 0, 14, 81
+"Total", "-", 258, 128, 58, 628, 2, 65, 1139

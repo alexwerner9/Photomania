@@ -1,0 +1,12 @@
+<html>
+    <body>
+        <input type="submit" value="reset cookies" onclick="resetCookie()">
+        <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.min.js"></script>
+        <script>
+            function resetCookie() {
+                Cookies.set("submitted","false");
+                Cookies.set('seenString','[]');
+            }
+        </script>
+    </body>
+</html>

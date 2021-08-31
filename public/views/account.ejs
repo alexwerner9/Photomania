@@ -1,0 +1,30 @@
+<html>
+    <head>
+        <title>
+            Photomania
+        </title>
+        <link rel="stylesheet" href="/public/views/style.css">
+    </head>
+    <body style="background-color:black">
+        <div id="main">
+            <div id="outer-div">
+
+                <label class="input-button">
+                    <input type="file" id="file-input" required/>
+                    <div id="span-div">
+                        <span id="select-text">Select image</span>
+                    </div>
+                </label>
+
+                <input type="text" id="reddit-name" placeholder="Reddit name">
+
+                <input type="submit" value="Upload image" onclick="submitFile()" id="upload-button" class="custom-button">
+                <input type="submit" value="reset cookies" onclick="resetCookie()" style="display:none">
+                
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.min.js"></script>
+                <script src="/public/views/client.js"></script>
+            </div>
+        </div>
+    </body>
+</html>

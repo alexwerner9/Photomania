@@ -1,0 +1,145 @@
+#main {
+    flex-direction:column;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 100vh;
+  }
+
+#outer-div {
+    display:flex;
+    flex-direction:column;
+    text-align:center;
+    border-radius:6px;
+    background-color:rgb(30,30,30);
+    box-shadow: 0 0px 20px 0 rgb(50, 50, 50), 0 0px 40px 0 rgb(50, 50, 50);
+}
+
+.custom-button {
+    background-color:rgb(50,50,50);
+    border-width:1px;
+    border-style:groove;
+    border-color:white;
+    border-radius:6px;
+    color: white;
+    margin:10px;
+    width:400px;
+    height:100px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size:30px;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    color:rgb(230,230,240);
+}
+.input-button {
+    background-color:rgb(50,50,50);
+    border-width:1px;
+    border-style:groove;
+    border-color:white;
+    border-radius:6px;
+    margin:10px;
+    width:400px;
+    height:100px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    position:relative;
+    font-size:30px;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    color:rgb(230,230,240);
+}
+.custom-button:hover, .input-button:hover {
+    background-color: rgb(70,70,70);
+    cursor:pointer;
+}
+.input-button input[type="file"] {
+    position:absolute;
+    top: -1000px;
+}
+
+#upload-button {
+    background-color: rgb(100,50,50);
+}
+#upload-button:hover {
+    background-color: rgb(100, 70, 70);
+    cursor:pointer;
+}
+#span-div {
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    margin:0 auto;
+    display:inline-block;
+    width:100%;
+    overflow:hidden;
+}
+
+/* Judging */
+#reddit-name {
+    background-color:rgb(50,50,50);
+    border-width:1px;
+    border-style:groove;
+    border-color:white;
+    border-radius:6px;
+    color: white;
+    margin:10px;
+    width:400px;
+    height:100px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size:30px;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    color:rgb(230,230,240);
+    position:relative;
+}
+#image-username {
+    position:relative;
+}
+#username {
+    font-size:25px;
+    color:floralwhite;
+    position:absolute;
+    bottom:-15px;
+    right:15px;
+    color:#fff;
+    text-shadow:1px 1px 3px #000, 1px 1px 5px #000, 1px 1px 7px #000, 1px 1px 10px #000;
+}
+
+#judged-image {
+    border-radius:6px;
+}
+
+/* Rating */
+.stars-class {
+    width:20px;
+    height:20px;
+    border-radius:6px;
+    background-color:#fff;
+    width:36px;
+    margin:2px;
+    background-color:rgb(50,50,50);
+    border-width:1px;
+    border-style:groove;
+    border-color:white;
+    border-radius:6px;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    color:rgb(230,230,240);
+}
+.stars-class:hover {
+    background-color: rgb(70,70,70);
+    cursor:pointer;
+}
+
+#stars {
+    display:flex;
+    padding-top:10px;
+    width:400px;
+}

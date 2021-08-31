@@ -1,0 +1,37 @@
+Date : 2021-08-29 18:58:51
+Directory : c:\Users\Alex\Desktop\Github\Photo Contest
+Total : 8 files,  1072 codes, 2 comments, 65 blanks, all 1139 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| JSON       |          2 |        628 |          0 |          2 |        630 |
+| JavaScript |          3 |        258 |          2 |         49 |        309 |
+| CSS        |          1 |        128 |          0 |          7 |        135 |
+| HTML       |          2 |         58 |          0 |          7 |         65 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                   | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                      |          8 |      1,072 |          2 |         65 |      1,139 |
+| public                                                                 |          5 |        328 |          0 |         41 |        369 |
+| public\views                                                           |          5 |        328 |          0 |         41 |        369 |
++------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                               | language   | code       | comment    | blank      | total      |
++------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Users\Alex\Desktop\Github\Photo Contest\index.js                    | JavaScript |        116 |          2 |         22 |        140 |
+| c:\Users\Alex\Desktop\Github\Photo Contest\package-lock.json           | JSON       |        612 |          0 |          1 |        613 |
+| c:\Users\Alex\Desktop\Github\Photo Contest\package.json                | JSON       |         16 |          0 |          1 |         17 |
+| c:\Users\Alex\Desktop\Github\Photo Contest\public\views\account.ejs    | HTML       |         25 |          0 |          4 |         29 |
+| c:\Users\Alex\Desktop\Github\Photo Contest\public\views\client.js      | JavaScript |         75 |          0 |         13 |         88 |
+| c:\Users\Alex\Desktop\Github\Photo Contest\public\views\style.css      | CSS        |        128 |          0 |          7 |        135 |
+| c:\Users\Alex\Desktop\Github\Photo Contest\public\views\submitted.ejs  | HTML       |         33 |          0 |          3 |         36 |
+| c:\Users\Alex\Desktop\Github\Photo Contest\public\views\submittedjs.js | JavaScript |         67 |          0 |         14 |         81 |
+| Total                                                                  |            |      1,072 |          2 |         65 |      1,139 |
++------------------------------------------------------------------------+------------+------------+------------+------------+------------+
