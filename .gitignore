@@ -1,2 +1,7 @@
 .env
 rootkey.csv
+imgURLS.txt
+usernames.txt
+Procfile
+node_modules/
+.VSCodecounter/
